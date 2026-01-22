@@ -15,7 +15,7 @@ This repository demonstrates not just SQL syntax, but a strategic approach to da
 ---
 
 <div align="center">
-   <img src = "Modulo3/e-commerce-database/E-COMMERCE-EN.png" width = "800px" alt = "E-Commerce EER Diagram" />
+   <img src = "E-COMMERCE-EN.png" width = "800px" alt = "E-Commerce EER Diagram" />
 </div>
 
 ---
