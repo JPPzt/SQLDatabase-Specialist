@@ -71,7 +71,7 @@ Below is the textual representation of the database schema, detailing entities, 
 
 ---
 
-## 📊 Business Intelligence & Data Analysis
+## Business Intelligence & Data Analysis
 
 Once the database architecture was established (as shown above), I focused on solving real-world business challenges using SQL. Below are key examples of how this data model supports strategic decision-making.
 
