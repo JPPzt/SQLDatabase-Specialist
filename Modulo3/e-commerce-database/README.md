@@ -120,6 +120,22 @@ FROM Customer_Metrics
 ORDER BY Total_Spent DESC;
 ```
 
+### 2. Supply Chain Audit: Conflict of Interest Detection
 
+**Business Problem:**
+The Compliance department requires an automated audit to identify corporate partners acting simultaneously as **Sellers** (Marketplace) and **Suppliers** (Inventory). This cross-referencing is vital to prevent conflicts of interest and ensure contract compliance.
 
+**Technical Solution:**
+I employed an `INNER JOIN` strategy based on the unique Tax ID (CNPJ) to filter strictly the intersection of both datasets. This query reveals entities operating in both roles.
+
+```sql
+SELECT 
+    s.idSeller,
+    s.CNPJ,
+    s.Corporate_Name AS Seller_Name,
+    sp.Corporate_Name AS Supplier_Name,
+    'CONFLICT DETECTED' AS Audit_Status
+FROM SELLER s
+INNER JOIN SUPPLIER sp ON s.CNPJ = sp.CNPJ;
+```
 
