@@ -138,4 +138,34 @@ SELECT
 FROM SELLER s
 INNER JOIN SUPPLIER sp ON s.CNPJ = sp.CNPJ;
 ```
+---
 
+### 3. Logistics Optimization: Extreme Freight Cost Analysis
+
+**Business Problem:**
+The Operations team identified inconsistencies in shipping costs. Instead of a simple average (which hides outliers), they requested a detailed audit to identify the **Top 3 most expensive shipments within each State**. This granular report allows the logistics manager to investigate specific cases of overcharging or inefficiency.
+
+**Technical Solution:**
+I utilized **Window Functions** (`RANK() OVER PARTITION BY`) to solve this problem. Unlike standard aggregation (`GROUP BY`), which collapses data, this technique allows me to rank orders individually *within* their respective geographical groups (States) while maintaining row-level detail for auditing.
+
+```sql
+WITH Ranked_Logistics AS (
+    SELECT 
+        c.State,
+        o.idOrder,
+        o.shipping_cost,
+
+        RANK() OVER (PARTITION BY c.State ORDER BY o.shipping_cost DESC) AS Freight_Rank
+    FROM CUSTOMER c
+    INNER JOIN ORDERS o ON c.idCustomer = o.CUSTOMER_idCustomer
+    WHERE o.Status IN ('Delivered', 'Shipped')
+)
+SELECT 
+    State,
+    idOrder,
+    shipping_cost,
+    Freight_Rank
+FROM Ranked_Logistics
+WHERE Freight_Rank
+ORDER BY State, Freight_Rank;
+```
