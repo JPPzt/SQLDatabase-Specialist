@@ -118,6 +118,7 @@ SELECT
    END AS Customer_Segment
 FROM Customer_Metrics
 ORDER BY Total_Spent DESC;
+```
 
 
 
