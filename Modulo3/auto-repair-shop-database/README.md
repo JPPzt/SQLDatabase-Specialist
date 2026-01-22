@@ -5,7 +5,9 @@
 ---
 
 ## Database Schema (EER Diagram)
-
+<div align="center">
+   <img src = "AutoRepairShop1.5.png" width = "800px" alt = "E-Commerce EER Diagram" />
+</div>
 ---
 
 ## Project Overview
