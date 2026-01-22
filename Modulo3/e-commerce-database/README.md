@@ -1,3 +1,24 @@
+# E-Commerce Strategic Database: Scalable Architecture & BI
+
+## Project Overview
+
+This project consists of end-to-end database modeling and implementation for a complex E-commerce ecosystem. The goal was to build a robust relational schema capable of handling high-volume transactions, diverse payment methods, and sophisticated supply chain logistics.
+
+Unlike simple academic exercises, this database was architected to solve specific real-world challenges, such as:
+* **Hybrid Customer Profiles:** Supporting both Individual (PF) and Corporate (PJ) clients within a unified structure.
+* **Multi-Payment Checkout:** Allowing a single order to be paid using multiple payment methods.
+* **Logistics & Tracking:** Detailed tracking codes and delivery status management for logistics optimization.
+* **Supply Chain Visibility:** Connecting products to specific suppliers and inventory locations.
+
+This repository demonstrates not just SQL syntax, but a strategic approach to data integrity and business intelligence.
+
+---
+
+<div align="center">
+   
+
+
+
 ## Relational Schema
 
 Below is the textual representation of the database schema, detailing entities, attributes, primary keys (PK), and foreign keys (FK).
