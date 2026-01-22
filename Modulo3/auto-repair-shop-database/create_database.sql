@@ -1,0 +1,253 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+USE auto_repair_shop;
+-- -----------------------------------------------------
+-- Schema auto_repair_shop
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Table `CLIENTS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `CLIENTS` ;
+
+CREATE TABLE IF NOT EXISTS `CLIENTS` (
+  `idClients` INT NOT NULL AUTO_INCREMENT,
+  `Address` VARCHAR(100) NOT NULL,
+  `ContactNumber` CHAR(11) NOT NULL,
+  `Email` VARCHAR(100) NULL,
+  PRIMARY KEY (`idClients`),
+  UNIQUE INDEX `idClients_UNIQUE` (`idClients` ASC) VISIBLE,
+  UNIQUE INDEX `ContactNumber_UNIQUE` (`ContactNumber` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `VEHICLES`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `VEHICLES` ;
+
+CREATE TABLE IF NOT EXISTS `VEHICLES` (
+  `idVehicles` INT NOT NULL AUTO_INCREMENT,
+  `LicensePlate` CHAR(7) NOT NULL,
+  `Brand` VARCHAR(30) NOT NULL,
+  `Model` VARCHAR(30) NOT NULL,
+  `Year` INT NOT NULL,
+  `CLIENTS_idClients` INT NOT NULL,
+  PRIMARY KEY (`idVehicles`, `CLIENTS_idClients`),
+  UNIQUE INDEX `idVehicles_UNIQUE` (`idVehicles` ASC) VISIBLE,
+  UNIQUE INDEX `LicensePlate_UNIQUE` (`LicensePlate` ASC) VISIBLE,
+  INDEX `fk_VEHICLES_CLIENTS1_idx` (`CLIENTS_idClients` ASC) VISIBLE,
+  CONSTRAINT `fk_VEHICLES_CLIENTS1`
+    FOREIGN KEY (`CLIENTS_idClients`)
+    REFERENCES `CLIENTS` (`idClients`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `SERVICE_TEAMS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `SERVICE_TEAMS` ;
+
+CREATE TABLE IF NOT EXISTS `SERVICE_TEAMS` (
+  `idSERVICE_TEAMS` INT NOT NULL AUTO_INCREMENT,
+  `TeamName` VARCHAR(45) NOT NULL,
+  `AverageRating` DECIMAL(4,2) NOT NULL,
+  `PerformanceScore` DECIMAL(4,2) NOT NULL,
+  PRIMARY KEY (`idSERVICE_TEAMS`),
+  UNIQUE INDEX `idSERVICE_TEAMS_UNIQUE` (`idSERVICE_TEAMS` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `WORK_ORDERS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `WORK_ORDERS` ;
+
+CREATE TABLE IF NOT EXISTS `WORK_ORDERS` (
+  `idWORK_ORDERS` INT NOT NULL AUTO_INCREMENT,
+  `TotalValue` DECIMAL(10,2) NOT NULL,
+  `Status` ENUM("Open", "In Progress", "Waiting Parts", "Finished") NOT NULL,
+  `IssueDate` DATE NOT NULL,
+  `Deadline` DATE NOT NULL,
+  `SERVICE_TEAMS_idSERVICE_TEAMS` INT NOT NULL,
+  `VEHICLES_idVehicles` INT NOT NULL,
+  PRIMARY KEY (`idWORK_ORDERS`, `SERVICE_TEAMS_idSERVICE_TEAMS`, `VEHICLES_idVehicles`),
+  UNIQUE INDEX `idWORK_ORDERS_UNIQUE` (`idWORK_ORDERS` ASC) VISIBLE,
+  INDEX `fk_WORK_ORDERS_SERVICE_TEAMS1_idx` (`SERVICE_TEAMS_idSERVICE_TEAMS` ASC) VISIBLE,
+  INDEX `fk_WORK_ORDERS_VEHICLES1_idx` (`VEHICLES_idVehicles` ASC) VISIBLE,
+  CONSTRAINT `fk_WORK_ORDERS_SERVICE_TEAMS1`
+    FOREIGN KEY (`SERVICE_TEAMS_idSERVICE_TEAMS`)
+    REFERENCES `SERVICE_TEAMS` (`idSERVICE_TEAMS`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_WORK_ORDERS_VEHICLES1`
+    FOREIGN KEY (`VEHICLES_idVehicles`)
+    REFERENCES `VEHICLES` (`idVehicles`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `PARTS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `PARTS` ;
+
+CREATE TABLE IF NOT EXISTS `PARTS` (
+  `idPARTS` INT NOT NULL AUTO_INCREMENT,
+  `PartName` VARCHAR(100) NOT NULL,
+  `PartDescription` TEXT NOT NULL,
+  `UnitPrice` DECIMAL(10,2) NOT NULL,
+  `StockQuantity` INT NOT NULL,
+  PRIMARY KEY (`idPARTS`),
+  UNIQUE INDEX `idPARTS_UNIQUE` (`idPARTS` ASC) VISIBLE,
+  UNIQUE INDEX `PartName_UNIQUE` (`PartName` ASC) VISIBLE
+  )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `WORK_ORDER_PARTS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `WORK_ORDER_PARTS` ;
+
+CREATE TABLE IF NOT EXISTS `WORK_ORDER_PARTS` (
+  `Quantity` INT NOT NULL,
+  `HistoricalPartPrice` DECIMAL(10,2) NOT NULL,
+  `PARTS_idPARTS` INT NOT NULL,
+  `WORK_ORDERS_idWORK_ORDERS` INT NOT NULL,
+  PRIMARY KEY (`PARTS_idPARTS`, `WORK_ORDERS_idWORK_ORDERS`),
+  INDEX `fk_WORK_ORDER_PARTS_WORK_ORDERS1_idx` (`WORK_ORDERS_idWORK_ORDERS` ASC) VISIBLE,
+  CONSTRAINT `fk_WORK_ORDER_PARTS_PARTS1`
+    FOREIGN KEY (`PARTS_idPARTS`)
+    REFERENCES `PARTS` (`idPARTS`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_WORK_ORDER_PARTS_WORK_ORDERS1`
+    FOREIGN KEY (`WORK_ORDERS_idWORK_ORDERS`)
+    REFERENCES `WORK_ORDERS` (`idWORK_ORDERS`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `SERVICES`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `SERVICES` ;
+
+CREATE TABLE IF NOT EXISTS `SERVICES` (
+  `idSERVICES` INT NOT NULL AUTO_INCREMENT,
+  `Description` TEXT NOT NULL,
+  `StandardLaborPrice` DECIMAL(10,2) NOT NULL,
+  `StandardLaborTime` DECIMAL(4,2) NOT NULL,
+  PRIMARY KEY (`idSERVICES`),
+  UNIQUE INDEX `idSERVICES_UNIQUE` (`idSERVICES` ASC) VISIBLE,
+)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `WORK_ORDER_SERVICES`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `WORK_ORDER_SERVICES` ;
+
+CREATE TABLE IF NOT EXISTS `WORK_ORDER_SERVICES` (
+  `Quantity` INT NOT NULL,
+  `HistoricalServicePrice` DECIMAL(10,2) NOT NULL,
+  `EstimatedServiceDuration` DECIMAL(4,2) NOT NULL,
+  `SERVICES_idSERVICES` INT NOT NULL,
+  `WORK_ORDERS_idWORK_ORDERS` INT NOT NULL,
+  PRIMARY KEY (`SERVICES_idSERVICES`, `WORK_ORDERS_idWORK_ORDERS`),
+  INDEX `fk_WORK_ORDER_SERVICES_WORK_ORDERS1_idx` (`WORK_ORDERS_idWORK_ORDERS` ASC) VISIBLE,
+  CONSTRAINT `fk_WORK_ORDER_SERVICES_SERVICES1`
+    FOREIGN KEY (`SERVICES_idSERVICES`)
+    REFERENCES `SERVICES` (`idSERVICES`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_WORK_ORDER_SERVICES_WORK_ORDERS1`
+    FOREIGN KEY (`WORK_ORDERS_idWORK_ORDERS`)
+    REFERENCES `WORK_ORDERS` (`idWORK_ORDERS`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `INDIVIDUAL_CLIENTS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `INDIVIDUAL_CLIENTS` ;
+
+CREATE TABLE IF NOT EXISTS `INDIVIDUAL_CLIENTS` (
+  `CPF` CHAR(11) NOT NULL,
+  `Name` VARCHAR(100) NOT NULL,
+  `BirthDate` DATE NOT NULL,
+  `CLIENTS_idClients` INT NOT NULL,
+  UNIQUE INDEX `CPF_UNIQUE` (`CPF` ASC) VISIBLE,
+  PRIMARY KEY (`CPF`, `CLIENTS_idClients`),
+  INDEX `fk_INDIVIDUAL_CLIENTS_CLIENTS_idx` (`CLIENTS_idClients` ASC) VISIBLE,
+  CONSTRAINT `fk_INDIVIDUAL_CLIENTS_CLIENTS`
+    FOREIGN KEY (`CLIENTS_idClients`)
+    REFERENCES `CLIENTS` (`idClients`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `CORPORATE_CLIENTS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `CORPORATE_CLIENTS` ;
+
+CREATE TABLE IF NOT EXISTS `CORPORATE_CLIENTS` (
+  `CNPJ` CHAR(14) NOT NULL,
+  `TradeName` VARCHAR(100) NOT NULL,
+  `Industry` VARCHAR(100) NOT NULL,
+  `CLIENTS_idClients` INT NOT NULL,
+  PRIMARY KEY (`CNPJ`, `CLIENTS_idClients`),
+  UNIQUE INDEX `CNPJ_UNIQUE` (`CNPJ` ASC) VISIBLE,
+  UNIQUE INDEX `TradeName_UNIQUE` (`TradeName` ASC) VISIBLE,
+  INDEX `fk_CORPORATE_CLIENTS_CLIENTS1_idx` (`CLIENTS_idClients` ASC) VISIBLE,
+  CONSTRAINT `fk_CORPORATE_CLIENTS_CLIENTS1`
+    FOREIGN KEY (`CLIENTS_idClients`)
+    REFERENCES `CLIENTS` (`idClients`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `MECHANICS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `MECHANICS` ;
+
+CREATE TABLE IF NOT EXISTS `MECHANICS` (
+  `idMECHANICS` INT NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(100) NOT NULL,
+  `Address` VARCHAR(100) NOT NULL,
+  `Specialty` VARCHAR(100) NOT NULL,
+  `BirthDate` DATE NOT NULL,
+  `SERVICE_TEAMS_idSERVICE_TEAMS` INT NOT NULL,
+  PRIMARY KEY (`idMECHANICS`, `SERVICE_TEAMS_idSERVICE_TEAMS`),
+  UNIQUE INDEX `idMECHANICS_UNIQUE` (`idMECHANICS` ASC) VISIBLE,
+  UNIQUE INDEX `Name_UNIQUE` (`Name` ASC) VISIBLE,
+  INDEX `fk_MECHANICS_SERVICE_TEAMS1_idx` (`SERVICE_TEAMS_idSERVICE_TEAMS` ASC) VISIBLE,
+  CONSTRAINT `fk_MECHANICS_SERVICE_TEAMS1`
+    FOREIGN KEY (`SERVICE_TEAMS_idSERVICE_TEAMS`)
+    REFERENCES `SERVICE_TEAMS` (`idSERVICE_TEAMS`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+USE auto_repair_shop;
+SHOW tables;
